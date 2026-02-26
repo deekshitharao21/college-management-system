@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Attendance Reports</h2>
+        <a href="{% url 'export_attendance' %}" class="btn btn-outline-success">
+            <i class="bi bi-download me-2"></i> Export CSV
+        </a>
+    </div>
+
+    <div class="glass-card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Student</th>
+                        <th>Roll No</th>
+                        <th>Morning (Att/Tot)</th>
+                        <th>Afternoon (Att/Tot)</th>
+                        <th>Total sessions</th>
+                        <th>Percentage</th>
+                        <th class="pe-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in stats %}
+                    <tr>
+                        <td class="ps-4"><strong>{{ stat.student.name }}</strong></td>
+                        <td>{{ stat.student.roll_no }}</td>
+                        <td>{{ stat.morning_present }} / {{ stat.morning_total }}</td>
+                        <td>{{ stat.afternoon_present }} / {{ stat.afternoon_total }}</td>
+                        <td>{{ stat.present }} / {{ stat.total }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="me-2">{{ stat.percent }}%</span>
+                                <div class="progress flex-grow-1" style="height: 6px; min-width: 100px;">
+                                    <div class="progress-bar {% if stat.percent < 75 %}bg-danger{% else %}bg-success{% endif %}"
+                                        role="progressbar" style="width: {{ stat.percent }}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="pe-4">
+                            {% if stat.percent < 75 %} <span class="badge bg-danger bg-opacity-10 text-danger">Low
+                                Attendance</span>
+                                {% else %}
+                                <span class="badge bg-success bg-opacity-10 text-success">Good</span>
+                                {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">No attendance records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

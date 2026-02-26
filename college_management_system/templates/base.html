@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CMS{% endblock %} - College Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-bg: #f8f9fa;
+            --sidebar-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --text-main: #0f172a;
+            --card-glass: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        .navbar-brand {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            height: 100vh;
+            width: 260px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
+            color: white;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin: 4px 16px;
+            transition: 0.3s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 12px;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 24px;
+            transition: all 0.3s;
+        }
+
+        .navbar {
+            background: var(--card-glass);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            border-radius: 12px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Micro-animations */
+        .hover-lift {
+            transition: transform 0.2s;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                margin-left: -260px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar.active {
+                margin-left: 0;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    {% if user.is_authenticated %}
+    <div class="sidebar" id="sidebar">
+        <div class="p-4">
+            <h3 class="fw-bold mb-4">CMS <span class="text-primary">Pro</span></h3>
+        </div>
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            {% if user.role == 'ADMIN' %}
+            <a class="nav-link {% if 'students' in request.path %}active{% endif %}" href="{% url 'student_list' %}">
+                <i class="bi bi-people"></i> Manage Students
+            </a>
+            <a class="nav-link" href="#"><i class="bi bi-person-badge"></i> Manage Faculty</a>
+            <a class="nav-link {% if 'timetable' in request.path %}active{% endif %}" href="{% url 'timetable_list' %}">
+                <i class="bi bi-calendar3"></i> Timetable
+            </a>
+            <a class="nav-link {% if 'attendance/report' in request.path %}active{% endif %}"
+                href="{% url 'attendance_report' %}">
+                <i class="bi bi-file-earmark-bar-graph"></i> Attendance Report
+            </a>
+            <a class="nav-link {% if 'marks/analytics' in request.path %}active{% endif %}"
+                href="{% url 'marks_analytics' %}">
+                <i class="bi bi-graph-up"></i> Marks Analytics
+            </a>
+            {% endif %}
+
+
+            {% if user.role == 'FACULTY' %}
+            <a class="nav-link {% if 'attendance' in request.path %}active{% endif %}"
+                href="{% url 'attendance_mark' %}">
+                <i class="bi bi-check2-square"></i> Attendance
+            </a>
+            <a class="nav-link {% if 'marks' in request.path %}active{% endif %}" href="{% url 'marks_list' %}">
+                <i class="bi bi-graph-up"></i> Mark Entry
+            </a>
+            <a class="nav-link {% if 'assignments' in request.path %}active{% endif %}"
+                href="{% url 'assignment_list' %}">
+                <i class="bi bi-journal-text"></i> Assignments
+            </a>
+            {% endif %}
+
+
+            {% if user.role == 'PRINCIPAL' %}
+            <a class="nav-link {% if 'attendance' in request.path %}active{% endif %}"
+                href="{% url 'attendance_report' %}">
+                <i class="bi bi-file-earmark-bar-graph"></i> Reports
+            </a>
+            <a class="nav-link {% if 'marks' in request.path %}active{% endif %}" href="{% url 'marks_analytics' %}">
+                <i class="bi bi-pie-chart"></i> Analytics
+            </a>
+            {% endif %}
+
+            {% if user.role == 'STUDENT' %}
+            <a class="nav-link {% if 'attendance' in request.path %}active{% endif %}"
+                href="{% url 'student_attendance' %}">
+                <i class="bi bi-file-earmark-check"></i> Attendance
+            </a>
+            <a class="nav-link {% if 'timetable' in request.path %}active{% endif %}" href="{% url 'timetable_list' %}">
+                <i class="bi bi-calendar3"></i> Timetable
+            </a>
+            <a class="nav-link {% if 'assignments' in request.path %}active{% endif %}"
+                href="{% url 'assignment_list' %}">
+                <i class="bi bi-journal-text"></i> Assignments
+            </a>
+            {% endif %}
+
+
+
+            <div class="mt-auto p-3">
+                <a class="nav-link {% if 'notifications' in request.path %}active{% endif %}"
+                    href="{% url 'notification_list' %}">
+                    <i class="bi bi-bell"></i> Notifications
+                    {% if user.unread_notifications_count > 0 %}
+                    <span class="badge bg-danger rounded-pill ms-2">{{ user.unread_notifications_count }}</span>
+                    {% endif %}
+
+                </a>
+                <a class="nav-link text-danger" href="{% url 'logout' %}">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+
+        </nav>
+    </div>
+    {% endif %}
+
+    <div class="{% if user.is_authenticated %}main-content{% else %}container{% endif %}">
+        {% if user.is_authenticated %}
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <span class="navbar-text fw-medium text-dark">
+                    Welcome, {{ user.get_full_name|default:user.username }} ({{ user.role }})
+                </span>
+                <div class="ms-auto d-flex align-items-center">
+                    <div class="dropdown">
+                        <a href="{% if user.role == 'STUDENT' %}{% url 'student_profile' %}{% elif user.role == 'FACULTY' %}{% url 'faculty_profile' %}{% elif user.role == 'PRINCIPAL' %}{% url 'principal_profile' %}{% else %}#{% endif %}"
+                            title="View Profile">
+                            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random"
+                                class="rounded-circle border border-white shadow-sm" width="40" height="40"
+                                alt="avatar shadow-sm">
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+        {% endif %}
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show glass-card mb-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block extra_js %}{% endblock %}
+
+</body>
+
+</html>

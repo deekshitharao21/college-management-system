@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Marks{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Student Marks</h2>
+        <div>
+            <button type="button" class="btn btn-outline-dark rounded-pill me-2 shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#importModal">
+                <i class="bi bi-upload me-2"></i> Import XML
+            </button>
+            <a href="{% url 'marks_add' %}" class="btn btn-primary rounded-pill shadow">
+                <i class="bi bi-plus-circle me-2"></i> Add Marks Manually
+            </a>
+        </div>
+
+    </div>
+
+    <div class="glass-card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Student</th>
+                        <th>Roll No</th>
+                        <th>Subject</th>
+                        <th>Internal</th>
+                        <th>External</th>
+                        <th>Total</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mark in marks %}
+                    <tr>
+                        <td class="ps-4"><strong>{{ mark.student.name }}</strong></td>
+                        <td>{{ mark.student.roll_no }}</td>
+                        <td>{{ mark.subject }}</td>
+                        <td>{{ mark.internal_marks }}</td>
+                        <td>{{ mark.external_marks }}</td>
+                        <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ mark.total_marks }}</span></td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'marks_edit' mark.id %}" class="btn btn-sm btn-outline-primary shadow-none">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">No marks recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">Import Marks from XML</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <form action="{% url 'import_marks_xml' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body py-4">
+                    <div class="mb-3">
+                        <label class="form-label text-dark-50 small">Select XML File</label>
+                        <input type="file" name="xml_file" class="form-control glass-input" accept=".xml" required>
+                    </div>
+                    <div class="alert alert-info bg-white bg-opacity-10 border-0 text-dark small">
+                        <strong>Format Required:</strong><br>
+                        &lt;marks&gt;<br>
+                        &nbsp;&nbsp;&lt;mark&gt;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;roll_no&gt;ROLL123&lt;/roll_no&gt;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;subject&gt;Maths&lt;/subject&gt;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;internal&gt;20&lt;/internal&gt;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;external&gt;80&lt;/external&gt;<br>
+                        &nbsp;&nbsp;&lt;/mark&gt;<br>
+                        &lt;/marks&gt;
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-light rounded-pill"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Upload and Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-input {
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: black;
+        border-radius: 10px;
+    }
+
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.7);
+        border-color: rgba(0, 0, 0, 0.2);
+        color: black;
+        box-shadow: none;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}Principal Profile | CMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0 text-dark shadow-sm">Administration Profile</h2>
+        <button type="button" class="btn btn-primary rounded-pill shadow-sm" data-bs-toggle="modal"
+            data-bs-target="#editProfileModal">
+            <i class="bi bi-pencil-square me-2"></i> Edit Executive Profile
+        </button>
+    </div>
+
+    <div class="row g-4">
+        <!-- Profile Sidebar Card -->
+        <div class="col-lg-4">
+            <div class="glass-card text-center p-5 h-100 animate__animated animate__fadeInLeft"
+                style="border-top: 5px solid #10b981;">
+                <div class="position-relative d-inline-block mb-4">
+                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=10b981&color=fff&size=150"
+                        class="rounded-circle shadow-lg border border-3 border-white" width="150" height="150"
+                        alt="Principal avatar">
+                    <span
+                        class="position-absolute bottom-0 end-0 badge rounded-pill bg-emerald border border-white p-2">
+                        <i class="bi bi-shield-check-fill"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">{{ user.get_full_name|default:user.username }}</h3>
+                <p class="text-dark-50 mb-4">College Principal | Senior Administrator</p>
+
+                <div class="p-3 bg-white bg-opacity-10 rounded-3 text-start mb-4">
+                    <small class="text-dark-50 d-block">Clearance Level</small>
+                    <span class="text-emerald fw-bold">Full Administrative Oversight</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="col-lg-8">
+            <div class="glass-card p-5 h-100 animate__animated animate__fadeInRight">
+                <h4 class="fw-bold text-dark mb-4 border-bottom border-white border-opacity-10 pb-3">Executive
+                    Information</h4>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="detail-box">
+                            <i class="bi bi-person-badge text-emerald fs-3"></i>
+                            <div class="ms-3">
+                                <label><i class="bi bi-info-circle small me-1"></i> Full Legal Name</label>
+                                <p>{{ user.get_full_name|default:"Administrator" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-box">
+                            <i class="bi bi-shield text-emerald fs-3"></i>
+                            <div class="ms-3">
+                                <label><i class="bi bi-lock small me-1"></i> Administrative ID</label>
+                                <p>{{ user.username }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-box">
+                            <i class="bi bi-envelope-at text-emerald fs-3"></i>
+                            <div class="ms-3">
+                                <label><i class="bi bi-mailbox small me-1"></i> Admin Email</label>
+                                <p>{{ user.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-box">
+                            <i class="bi bi-diagram-3 text-emerald fs-3"></i>
+                            <div class="ms-3">
+                                <label><i class="bi bi-patch-check small me-1"></i> Official Role</label>
+                                <p>College Principal</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="detail-box">
+                            <i class="bi bi-calendar3 text-emerald fs-3"></i>
+                            <div class="ms-3">
+                                <label><i class="bi bi-clock-history small me-1"></i> Term Start Date</label>
+                                <p>{{ user.date_joined|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="mt-5 d-flex justify-content-between align-items-center">
+                    <a href="{% url 'principal_dashboard' %}" class="btn btn-outline-light rounded-pill px-4">
+                        <i class="bi bi-shield-check me-2"></i> Management
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark" id="editProfileModalLabel">
+                    <i class="bi bi-shield-lock me-2"></i> Update Administrative Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4 text-dark">
+                    <div class="mb-4">
+                        <label class="form-label small text-uppercase fw-bold opacity-50">First Name</label>
+                        {{ u_form.first_name }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small text-uppercase fw-bold opacity-50">Last Name</label>
+                        {{ u_form.last_name }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-uppercase fw-bold opacity-50">Admin Email</label>
+                        {{ u_form.email }}
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-dark rounded-pill px-4"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">
+                        <i class="bi bi-save me-2"></i> Update Dossier
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Ensure modal inputs are visible */
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+        background: rgba(255, 255, 255, 0.8) !important;
+        color: black !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .text-emerald {
+        color: #10b981;
+    }
+
+    .bg-emerald {
+        background-color: #10b981;
+    }
+
+    .detail-box {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .detail-box:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .detail-box label {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.5);
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .detail-box p {
+        margin: 0;
+        font-size: 1.1rem;
+        color: black;
+        font-weight: 500;
+    }
+
+    @media print {
+
+        .sidebar,
+        .navbar,
+        .btn,
+        .mt-5 {
+            display: none !important;
+        }
+
+        .main-content {
+            margin-left: 0 !important;
+        }
+
+        .glass-card {
+            background: white !important;
+            color: black !important;
+            border: 1px solid #ddd !important;
+        }
+
+        .text-white,
+        .text-white-50,
+        .detail-box p {
+            color: black !important;
+        }
+    }
+</style>
+{% endblock %}

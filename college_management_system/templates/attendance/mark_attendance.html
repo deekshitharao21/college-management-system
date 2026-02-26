@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="fw-bold mb-4">Mark Attendance</h2>
+
+    <div class="glass-card p-5">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-4 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Select Date</label>
+                    <input type="date" name="date" class="form-control" value="{{ today }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Select Session</label>
+                    <select name="session" class="form-select" required>
+                        {% for session in sessions %}
+                        <option value="{{ session }}">{{ session }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p class="text-muted mb-0">Department: <strong>{{ user.faculty_profile.department }}</strong></p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Roll No</th>
+                            <th>Student Name</th>
+                            <th class="text-center">Present</th>
+                            <th class="text-center">Absent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td class="ps-4">{{ student.roll_no }}</td>
+                            <td>{{ student.name }}</td>
+                            <td class="text-center">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="status_{{ student.id }}"
+                                        value="Present" checked>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="status_{{ student.id }}"
+                                        value="Absent">
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No students found in your department.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-primary px-5 py-2">Submit Attendance</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

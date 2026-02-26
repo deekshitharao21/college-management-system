@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'student_list' %}" class="text-decoration-none">Students</a>
+            </li>
+            <li class="breadcrumb-item active">{{ title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="glass-card p-5">
+                <h2 class="fw-bold mb-4">{{ title }}</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-4">
+                        {% for field in form %}
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="text-muted d-block mt-1">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-5 d-flex gap-3">
+                        <button type="submit" class="btn btn-primary px-5 py-2">Save Student</button>
+                        <a href="{% url 'student_list' %}" class="btn btn-outline-secondary px-5 py-2">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

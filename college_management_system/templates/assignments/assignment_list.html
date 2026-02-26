@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Assignments{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Assignments</h2>
+        {% if user.role == "FACULTY" %}
+        <a href="{% url 'assignment_add' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i> Post Assignment
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% for assignment in assignments %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="glass-card p-4 h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                        Sem {{ assignment.semester }} | {{ assignment.department }}
+                    </span>
+                    <small class="text-muted">{{ assignment.created_at|date:"d M" }}</small>
+                </div>
+                <h4 class="fw-bold mb-3">{{ assignment.title }}</h4>
+                <p class="text-secondary flex-grow-1">{{ assignment.description|truncatewords:20 }}</p>
+
+                <div class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-danger fw-bold">
+                            <i class="bi bi-calendar-event me-1"></i>
+                            Due: {{ assignment.deadline|date:"d M, H:i" }}
+                        </small>
+                        <a href="{% url 'assignment_detail' assignment.pk %}" class="btn btn-sm btn-outline-primary">
+                            View Details
+                        </a>
+                    </div>
+                    {% if user.role == "FACULTY" %}
+                    <div class="mt-2 text-end">
+                        <a href="{% url 'submission_list' assignment.pk %}" class="text-muted small">
+                            <i class="bi bi-files me-1"></i> Submissions ({{ assignment.submissions.count }})
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="glass-card p-5">
+                <i class="bi bi-journal-x display-4 text-muted mb-3 d-block"></i>
+                <h5 class="text-muted">No assignments found.</h5>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

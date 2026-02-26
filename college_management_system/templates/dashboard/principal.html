@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Principal Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="fw-bold mb-4 text-dark">Principal Analytics Dashboard</h2>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="glass-card p-5 text-center">
+                <i class="bi bi-bar-chart-line text-success fs-1 mb-3 d-block"></i>
+                <h3 class="text-dark">College Oversight</h3>
+                <p class="text-dark opacity-75">Monitor academic performance and attendance across all departments.</p>
+                <div class="mt-4">
+                    <a href="{% url 'attendance_report' %}"
+                        class="btn btn-success me-2 rounded-pill shadow-sm">Reports</a>
+                    <a href="{% url 'notification_list' %}"
+                        class="btn btn-info me-2 rounded-pill text-dark shadow-sm">Notifications</a>
+                    <a href="{% url 'timetable_list' %}" class="btn btn-primary me-2 rounded-pill shadow-sm">Academic
+                        Timetable</a>
+                    <a href="{% url 'marks_analytics' %}" class="btn btn-outline-success rounded-pill">Analytics</a>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Faculty Management Section -->
+    <div class="row mt-5 g-4">
+        <div class="col-md-6">
+            <div class="glass-card p-4 h-100">
+                <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-people me-2"></i>Faculty Management</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Faculty</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fac in faculty_list %}
+                            <tr>
+                                <td class="fw-bold">{{ fac.user.get_full_name|default:fac.user.username }}</td>
+                                <td>{{ fac.department }}</td>
+                                <td>
+                                    {% if fac.user.is_authorized %}
+                                    <span class="badge bg-success">Authorized</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form action="{% url 'toggle_faculty_authorization' fac.pk %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                            class="btn btn-sm {% if fac.user.is_authorized %}btn-outline-danger{% else %}btn-outline-success{% endif %} rounded-pill">
+                                            {% if fac.user.is_authorized %}De-authorize{% else %}Authorize{% endif %}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No faculty registered.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="glass-card p-4 h-100">
+                <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-award me-2"></i>Academic Performance</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Student</th>
+                                <th>Subject</th>
+                                <th>Total</th>
+                                <th>Recorded By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mark in all_marks %}
+                            <tr>
+                                <td class="fw-bold">{{ mark.student.name }}</td>
+                                <td>{{ mark.subject }}</td>
+                                <td><span class="badge bg-info">{{ mark.total_marks }}</span></td>
+                                <td class="small text-muted">
+                                    {% if mark.recorded_by %}
+                                    {{ mark.recorded_by.user.get_full_name|default:mark.recorded_by.user.username }}
+                                    {% else %}
+                                    Unknown
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No marks recorded.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

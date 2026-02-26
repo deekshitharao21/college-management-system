@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Marks Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="fw-bold mb-4">Performance Analytics</h2>
+
+    <div class="row g-4 mb-5">
+        {% for stat in analytics %}
+        <div class="col-md-4">
+            <div class="glass-card p-4 hover-lift">
+                <h5 class="text-muted mb-2">{{ stat.subject }}</h5>
+                <h3 class="fw-bold mb-3">Avg: {{ stat.avg_total|floatformat:2 }}</h3>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ stat.avg_total }}%"></div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-md-12">
+            <div class="glass-card p-5 text-center">
+                <p class="text-muted">No data available for analytics.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-5">
+        <div class="glass-card p-5">
+            <h2 class="text-center mb-4 fw-bold">Login to CMS</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    {{ form.username }}
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Sign In</button>
+            </form>
+            <div class="text-center mt-3">
+                <p>New Student? <a href="{% url 'student_signup' %}"
+                        class="text-primary text-decoration-none fw-bold">Register here</a></p>
+                <p>Faculty? <a href="{% url 'faculty_signup' %}" class="text-primary text-decoration-none">Faculty Sign
+                        up</a></p>
+                <p>Other roles? <a href="{% url 'signup' %}" class="text-muted text-decoration-none small">Generic Sign
+                        up</a></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

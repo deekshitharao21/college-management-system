@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Timetable | CMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0 text-dark">Weekly Schedule</h2>
+        {% if user.role != 'STUDENT' %}
+        <div>
+            <button type="button" class="btn btn-outline-dark rounded-pill me-2 shadow-sm" data-bs-toggle="modal"
+                data-bs-target="#importTimetableModal">
+                <i class="bi bi-upload me-2"></i> Import XML
+            </button>
+            <a href="{% url 'timetable_add' %}" class="btn btn-primary rounded-pill shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i> Add New Entry
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Import XML Modal -->
+    <div class="modal fade" id="importTimetableModal" tabindex="-1" aria-labelledby="importTimetableModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="importTimetableModalLabel">
+                        <i class="bi bi-file-earmark-code me-2"></i> Import Schedule XML
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{% url 'import_timetable_xml' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-body p-4">
+                        <div class="mb-4">
+                            <label class="form-label text-dark-50 small text-uppercase fw-bold">Select XML File</label>
+                            <input type="file" name="xml_file" class="form-control glass-input" accept=".xml" required>
+                        </div>
+                        <div class="alert alert-info border-0 rounded-3 small py-2">
+                            <i class="bi bi-info-circle me-2"></i> <strong>XML Format:</strong>
+                            <pre class="mt-2 mb-0" style="font-size: 0.75rem;">
+&lt;timetable&gt;
+  &lt;entry&gt;
+    &lt;day&gt;MONDAY&lt;/day&gt;
+    &lt;subject&gt;Mathematics&lt;/subject&gt;
+    &lt;start_time&gt;09:00&lt;/start_time&gt;
+    &lt;end_time&gt;10:00&lt;/end_time&gt;
+    &lt;faculty_id&gt;faculty_username&lt;/faculty_id&gt;
+    &lt;room&gt;Lab 101&lt;/room&gt;
+    &lt;department&gt;CSE&lt;/department&gt;
+    &lt;semester&gt;4&lt;/semester&gt;
+  &lt;/entry&gt;
+&lt;/timetable&gt;</pre>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-outline-dark rounded-pill px-4"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 shadow">
+                            <i class="bi bi-cloud-arrow-up me-2"></i> Process Import
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-dark">
+                <thead class="bg-white bg-opacity-10">
+                    <tr>
+                        <th class="ps-4">Day</th>
+                        <th>Subject</th>
+                        <th>Time</th>
+                        <th>Faculty</th>
+                        <th>Room</th>
+                        <th>Dept/Sem</th>
+                        {% if user.role != 'STUDENT' %}
+                        <th class="text-end pe-4">Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in timetable %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-primary-light">{{ entry.get_day_display }}</td>
+                        <td>{{ entry.subject }}</td>
+                        <td>
+                            <i class="bi bi-clock me-1 text-info small"></i>
+                            {{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}
+                        </td>
+                        <td>{{ entry.faculty.user.get_full_name|default:entry.faculty.user.username }}</td>
+                        <td><span class="badge bg-secondary bg-opacity-25">{{ entry.room }}</span></td>
+                        <td>
+                            <small class="text-dark-50">{{ entry.department }}</small>
+                            <span class="badge bg-white bg-opacity-10 ms-1">S{{ entry.semester }}</span>
+                        </td>
+                        {% if user.role != 'STUDENT' %}
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <a href="{% url 'timetable_edit' entry.pk %}"
+                                    class="btn btn-sm btn-outline-light border-0">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'timetable_delete' entry.pk %}"
+                                    class="btn btn-sm btn-outline-light border-0 text-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-dark-50">No timetable entries found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-primary-light {
+        color: #a5c9ff;
+    }
+
+    .glass-input {
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: black;
+        border-radius: 10px;
+    }
+
+    pre {
+        background: rgba(0, 0, 0, 0.05);
+        padding: 10px;
+        border-radius: 8px;
+        color: #333;
+    }
+</style>
+{% endblock %}

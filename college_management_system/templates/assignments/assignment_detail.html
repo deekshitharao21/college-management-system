@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row g-4">
+        <!-- Assignment Details -->
+        <div class="col-lg-8">
+            <div class="glass-card p-4 p-md-5 h-100">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">{{ assignment.title }}</h2>
+                        <span class="text-muted">By Prof. {{ assignment.faculty.user.last_name }} | {{
+                            assignment.created_at|date:"d M, Y" }}</span>
+                    </div>
+                    <span class="badge bg-primary px-3 py-2">Sem {{ assignment.semester }}</span>
+                </div>
+
+                <div class="assignment-desc mb-5">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">Instructions</h5>
+                    <p class="text-dark" style="white-space: pre-wrap;">{{ assignment.description }}</p>
+                </div>
+
+                {% if assignment.file %}
+                <div class="attachment-card p-3 bg-light rounded-3 d-flex align-items-center">
+                    <i class="bi bi-file-earmark-pdf display-6 text-danger me-3"></i>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 text-dark">Reference File</h6>
+                        <small class="text-muted">Size: {{ assignment.file.size|filesizeformat }}</small>
+                    </div>
+                    <a href="{{ assignment.file.url }}" class="btn btn-sm btn-outline-dark" download>
+                        <i class="bi bi-download"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Submission Section -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4 h-100 shadow-sm border-primary border-opacity-25">
+                <h4 class="fw-bold mb-4 border-bottom pb-2">Your Submission</h4>
+
+                <div class="mb-4">
+                    <label class="text-muted small d-block mb-1">Status</label>
+                    {% if submission %}
+                    <span
+                        class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 w-100 text-start">
+                        <i class="bi bi-check-circle-fill me-2"></i> Submitted
+                    </span>
+                    {% else %}
+                    <span
+                        class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 w-100 text-start">
+                        <i class="bi bi-clock me-2"></i> Pending
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4 p-3 bg-danger bg-opacity-10 rounded-3">
+                    <label class="text-danger small d-block mb-1">Deadline</label>
+                    <span class="fw-bold text-danger">{{ assignment.deadline|date:"l, d M Y" }}</span>
+                    <div class="text-danger small">{{ assignment.deadline|date:"H:i" }}</div>
+                </div>
+
+                {% if user.role == "STUDENT" %}
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Upload Your Work</label>
+                        {{ form.file }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Comments (Optional)</label>
+                        {{ form.comment }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-3 mt-3">
+                        {% if submission %}Update Submission{% else %}Submit Work{% endif %}
+                    </button>
+                </form>
+
+                {% if submission %}
+                <div class="mt-4 p-3 border rounded">
+                    <small class="text-muted d-block mb-1">Previously Uploaded:</small>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-check text-success me-2"></i>
+                        <a href="{{ submission.file.url }}" target="_blank" class="small text-truncate">{{
+                            submission.file.name }}</a>
+                    </div>
+                    <small class="text-muted d-block mt-1">On {{ submission.submitted_at|date:"d M, H:i" }}</small>
+                </div>
+                {% endif %}
+
+                {% elif user.role == "FACULTY" %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i> Faculty view only. Use the "Submissions" link in the list to
+                    see student work.
+                </div>
+                <a href="{% url 'submission_list' assignment.pk %}" class="btn btn-dark w-100 py-2">
+                    View Submissions
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

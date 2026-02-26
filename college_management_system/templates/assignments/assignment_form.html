@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="max-width-700 mx-auto">
+        <h2 class="fw-bold mb-4">{{ title }}</h2>
+
+        <div class="glass-card p-4 p-md-5">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Assignment Title</label>
+                        {{ form.title }}
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Description / Instructions</label>
+                        {{ form.description }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Department</label>
+                        {{ form.department }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Semester</label>
+                        {{ form.semester }}
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Submission Deadline</label>
+                        {{ form.deadline }}
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Attach Reference File (Optional)</label>
+                        {{ form.file }}
+                        <small class="text-muted mt-1 d-block">PDF, images, or documents.</small>
+                    </div>
+                </div>
+
+                <div class="mt-5 d-flex gap-3">
+                    <button type="submit" class="btn btn-primary px-5 py-2">Post Assignment</button>
+                    <a href="{% url 'assignment_list' %}" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .max-width-700 {
+        max-width: 700px;
+    }
+</style>
+{% endblock %}

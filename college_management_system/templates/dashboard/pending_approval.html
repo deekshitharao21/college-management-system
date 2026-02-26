@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Pending Approval{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="glass-card p-5">
+                <div class="mb-4">
+                    <i class="bi bi-shield-lock text-warning display-1"></i>
+                </div>
+                <h2 class="fw-bold mb-3">Approval Pending</h2>
+                <p class="text-muted fs-5 mb-4">
+                    Your faculty account has been created successfully, but it requires authorization from the Principal
+                    before you can access the dashboard.
+                </p>
+                <div class="alert alert-info glass-card border-info">
+                    <i class="bi bi-info-circle me-2"></i> Please contact the college administration to expedite your
+                    authorization.
+                </div>
+                <div class="mt-4">
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger rounded-pill px-4">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
